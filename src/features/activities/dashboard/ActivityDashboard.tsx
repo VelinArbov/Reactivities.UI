@@ -9,8 +9,8 @@ export default observer( function ActivityDashboard() {
     const {activityStore} = useStore();
 
     useEffect(() => {
-      activityStore.loadActivities();
-    }, [activityStore]);
+      if(activityStore.activityRegistery.size <= 1) activityStore.loadActivities();
+    }, [activityStore.loadActivities]);
   
     if (activityStore.loadingInitial) return <LoadingComponents content='Loading app' /> 
 

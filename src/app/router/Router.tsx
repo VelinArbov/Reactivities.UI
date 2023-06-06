@@ -5,16 +5,16 @@ import ActivityDashboard from "../../features/activities/dashboard/ActivityDashb
 import ActivityForm from "../../features/activities/form/ActivityForm";
 import ActivityDetails from "../../features/activities/details/ActivityDetails";
 
-export const routes : RouteObject[] = [
+export const routes: RouteObject[] = [
     {
         path: '/',
-        element: <App/>,
+        element: <App />,
         children: [
-            {path: '', element: <HomePage/> },
-            {path: 'activities', element: <ActivityDashboard/> },
-            {path: 'activities/:id', element: <ActivityDetails/> },
-            {path: 'createactivity', element: <ActivityForm/> },
-            {path: 'edit/:id', element: <ActivityForm/> },
+            { path: '', element: <HomePage /> },
+            { path: 'activities', element: <ActivityDashboard /> },
+            { path: 'activities/:id', element: <ActivityDetails /> },
+            { path: 'createactivity', element: <ActivityForm key='create' /> },
+            { path: 'edit/:id', element: <ActivityForm key='edit' /> },
         ]
     }
 ]
