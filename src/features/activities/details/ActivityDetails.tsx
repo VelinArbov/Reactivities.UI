@@ -1,32 +1,39 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, Image, Button } from 'semantic-ui-react';
-import { Activity } from '../../../app/models/activity';
+import { useStore } from '../../../app/stores/store';
+import { observer } from 'mobx-react-lite';
+import { Link, useParams } from 'react-router-dom';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 
-interface Props {
-    activity: Activity;
-    cancelSelectActivity: () => void;
-    openForm: (id: string) => void;
-}
+export default observer(function ActivityDetails() {
+    const { activityStore } = useStore();
+    const {id} = useParams();
 
-export default function ActivityDetails({ activity, cancelSelectActivity, openForm }: Props) {
+    useEffect (() => {
+        if(id) activityStore.loadActivity(id);
+    },[id, activityStore.loadActivity])
+
+    if(activityStore.loadingInitial || !activityStore.selectedActivity) return <LoadingComponent />
+
     return (
         <Card fluid>
-            <Image src={`/assets/categoryImages/${activity.category}.jpg`} />
+            <Image src={`/assets/categoryImages/${activityStore.selectedActivity?.category}.jpg`} />
             <Card.Content>
-                <Card.Header>{activity.title}</Card.Header>
+                <Card.Header>{activityStore.selectedActivity?.title}</Card.Header>
                 <Card.Meta>
-                    <span >{activity.date}</span>
+                    <span >{activityStore.selectedActivity?.date}</span>
                 </Card.Meta>
                 <Card.Description>
-                    {activity.description}.
+                    {activityStore.selectedActivity?.description}.
                 </Card.Description>
             </Card.Content>
             <Card.Content extra>
                 <Button.Group widths='2'>
-                    <Button onClick={() => openForm(activity.id)} basic color='blue' content='Edit' />
-                    <Button onClick={cancelSelectActivity} basic color='grey' content='Cancel' />
+                    <Button as={Link} to={`/edit/${activityStore.selectedActivity.id}`} basic color='blue' content='Edit' />
+                    <Button as={Link} to='/activities' basic color='grey' content='Cancel' />
                 </Button.Group>
             </Card.Content>
         </Card>
     )
 }
+)
