@@ -3,10 +3,17 @@ import { Activity } from "../models/activity";
 import { toast } from "react-toastify";
 import { router } from "../router/Router";
 import { store, useStore } from "../stores/store";
+import { User, UserFormValues } from "../models/user";
 
 axios.defaults.baseURL = "https://localhost:7070/";
 
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
+
+axios.interceptors.request.use(config => {
+  const token = store.commonStore.token;
+  if(token && config) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+})
 
 axios.interceptors.response.use(
   async (response) => {
@@ -32,10 +39,10 @@ axios.interceptors.response.use(
         }
         break;
       case 401:
-        toast.error("unauthorised");
+        toast.error("Unauthorised");
         break;
       case 403:
-        toast.error("forbidden");
+        toast.error("Forbidden");
         break;
       case 404:
         router.navigate("/not-founded");
@@ -66,8 +73,17 @@ const Activities = {
   delete: (id: string) => axios.delete<void>(`/activities/${id}`),
 };
 
+const Account = {
+  current: () => requests.get<User>("api/account"),
+  login: (user: UserFormValues) =>
+    requests.post<User>("api/account/login", user),
+  register: (user: UserFormValues) =>
+    requests.post<User>("api/account/register", user),
+};
+
 const agent = {
   Activities,
+  Account,
 };
 
 export default agent;
