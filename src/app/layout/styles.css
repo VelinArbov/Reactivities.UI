@@ -39,3 +39,11 @@ body{
   font-size: 1.7em;
   font-weight: normal;
 }
+
+#loginBtn {
+  margin-left: 60px !important;
+}
+
+#registerBtn {
+  margin-left: 5px;
+}
