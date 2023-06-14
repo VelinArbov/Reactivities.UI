@@ -1,9 +1,9 @@
 import React, {  useEffect, useState } from 'react';
-import { Segment, Button } from 'semantic-ui-react';
+import { Segment, Button, Header } from 'semantic-ui-react';
 import { useStore } from '../../../app/stores/store';
 import { observer } from 'mobx-react-lite';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Activity } from '../../../app/models/activity';
+import { Activity, ActivityFormValues } from '../../../app/models/activity';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { v4 as uuid } from 'uuid';
 import { Formik, Form } from 'formik';
@@ -18,15 +18,7 @@ export default observer(function ActivityForm() {
     const { activityStore } = useStore();
     const { id } = useParams();
     const navigate = useNavigate();
-    const [activity, setActivity] = useState<Activity>({
-        id: '',
-        title: '',
-        category: '',
-        description: '',
-        date: null,
-        city: '',
-        venue: '',
-    });
+    const [activity, setActivity] = useState<ActivityFormValues>(new ActivityFormValues());
 
     const validationSchema = Yup.object({
         title: Yup.string().required('The activity title is required!'),
@@ -38,10 +30,10 @@ export default observer(function ActivityForm() {
     })
 
     useEffect(() => {
-        if (id) activityStore.loadActivity(id).then(activity => setActivity(activity!))
+        if (id) activityStore.loadActivity(id).then(activity => setActivity(new ActivityFormValues(activity)))
     }, [id, activityStore.loadActivity])
 
-    function handleFormSubmit(activity: Activity) {
+    function handleFormSubmit(activity: ActivityFormValues) {
         if (!activity.id) {
             activity.id = uuid();
             activityStore.createActivity(activity).then(() => navigate(`/activities/${activity.id}`))
@@ -63,9 +55,10 @@ export default observer(function ActivityForm() {
                 onSubmit={values => handleFormSubmit(values)}>
                 {({ handleSubmit, isValid, isSubmitting, dirty }) => (
                     <Form className='ui form' onSubmit={handleSubmit} autoComplete='off'>
-                        <TextInput placeholder='Title' name='title' label='Title'></TextInput>
-                        <TextArea rows={3} placeholder='Description' name='description' label='Description' />
-                        <SelectInput placeholder='Category' name='category' label='Category' options={categoryOptions} />
+                        <Header content='Activity Details' sub color='teal' />
+                        <TextInput placeholder='Title' name='title'></TextInput>
+                        <TextArea rows={3} placeholder='Description' name='description' />
+                        <SelectInput placeholder='Category' name='category' options={categoryOptions} />
                         <DateInput
                             placeholderText='Date'
                             name='date'
@@ -73,11 +66,12 @@ export default observer(function ActivityForm() {
                             timeCaption='time'
                             dateFormat='MMMM d, yyyy h:mm aa'
                         />
-                        <TextInput placeholder='City' name='city' label='City' />
-                        <TextInput placeholder='Venue' name='venue' label='Venue' />
+                        <Header content='Location Details' sub color='teal' />
+                        <TextInput placeholder='City' name='city' />
+                        <TextInput placeholder='Venue' name='venue' />
                         <Button
                             disabled={isSubmitting || !dirty || !isValid}
-                            loading={activityStore.loading}
+                            loading={isSubmitting}
                             floated='right'
                             positive
                             type='submit'
