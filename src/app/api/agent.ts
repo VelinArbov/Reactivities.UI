@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { Activity, ActivityFormValues } from "../models/activity";
 import { toast } from "react-toastify";
 import { router } from "../router/Router";
-import { store, useStore } from "../stores/store";
+import { store } from "../stores/store";
 import { User, UserFormValues } from "../models/user";
 
 axios.defaults.baseURL = "https://localhost:7070/";
@@ -23,7 +23,7 @@ axios.interceptors.response.use(
     const { data, status, config } = error.response as AxiosResponse;
     switch (status) {
       case 400:
-        if (config.method == "get" && data.errors.hasOwnProperty("id")) {
+        if (config.method === "get" && data.errors.hasOwnProperty("id")) {
           router.navigate("/not-found");
         }
         if (data.errors) {

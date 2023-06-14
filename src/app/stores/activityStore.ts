@@ -1,9 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { Activity, ActivityFormValues } from "../models/activity";
 import agent from "../api/agent";
-import { v4 as uuid } from "uuid";
 import { store } from "./store";
-import { hostname } from "os";
 import { Profile } from "../models/profile";
 
 export default class ActivityStore {
@@ -170,6 +168,24 @@ export default class ActivityStore {
       console.log(error);
     } finally {
       runInAction(() => (this.loading = false));
+    }
+  };
+
+  cancelActivityToggle = async () => {
+    this.loading = true;
+    try {
+      await agent.Activities.attend(this.selectedActivity!.id);
+      runInAction(()=> {
+        this.selectedActivity!.isCancelled = !this.selectedActivity?.isCancelled;
+        this.activityRegistery.set(this.selectedActivity!.id, this.selectedActivity!)
+      })
+
+    } catch (error) {
+      console.log(error)
+    } finally {
+      runInAction(() => {
+        this.loading = false;
+      });
     }
   };
 }
