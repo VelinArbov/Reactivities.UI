@@ -8,7 +8,6 @@ interface Props {
     profile: Profile
 }
 
-
 export default observer (function ProfileCard({ profile }: Props) {
     return (
         <Card as={Link} to={`/profles/${profile.userName}`}>
