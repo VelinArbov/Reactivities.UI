@@ -4,7 +4,6 @@ import CommonStore from "./commonStore";
 import UserStore from "./userStore";
 import ModalStore from "./modalStore";
 import ProfileStore from "./profileStore";
-import { profile } from "console";
 
 interface Store{
     activityStore: ActivityStore
