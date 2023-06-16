@@ -6,7 +6,7 @@ import { store } from "../stores/store";
 import { User, UserFormValues } from "../models/user";
 import { Photo, Profile } from "../models/profile";
 
-axios.defaults.baseURL = "https://localhost:7070/";
+axios.defaults.baseURL = "http://localhost:5085/";
 
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 

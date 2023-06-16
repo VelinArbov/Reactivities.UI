@@ -15,7 +15,8 @@ export default observer(function ActivityDetails() {
 
     useEffect(() => {
         if (id) activityStore.loadActivity(id);
-    }, [id, activityStore.loadActivity])
+        return () => activityStore.clearSelectedActivity();
+    }, [id, activityStore.loadActivity, activityStore.clearSelectedActivity])
 
     if (activityStore.loadingInitial || !activityStore.selectedActivity) return <LoadingComponent />
 
@@ -24,7 +25,7 @@ export default observer(function ActivityDetails() {
             <Grid.Column width={10}>
                 <ActivityDetailedHeader activity={activityStore.selectedActivity} />
                 <ActivityDetailedInfo activity={activityStore.selectedActivity} />
-                <ActivityDetailedChat />
+                <ActivityDetailedChat activityId={activityStore.selectedActivity.id}/>
             </Grid.Column>
             <Grid.Column width={6}>
                 <ActivityDetailedSidebar activity={activityStore.selectedActivity!} />
