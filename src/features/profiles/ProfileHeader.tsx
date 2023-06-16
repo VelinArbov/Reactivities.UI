@@ -1,18 +1,22 @@
-import { Button, Divider, Grid, Header, Item, Reveal, RevealContent, Segment, Statistic } from "semantic-ui-react"
+import { Button, Divider, Grid, Header, Item, Reveal, Segment, Statistic } from "semantic-ui-react"
 import { Profile } from "../../app/models/profile"
+import { useStore } from "../../app/stores/store";
+import { observer } from "mobx-react-lite";
+
 
 interface Props{
     profile: Profile
 }
 
-export default function ProfileHeader({profile} : Props) {
+export default observer( function ProfileHeader({profile} : Props) {
+    const { userStore: { user } } = useStore();
     return (
         <Segment>
             <Grid>
                 <Grid.Column width={12}>
                     <Item.Group>
                         <Item>
-                            <Item.Image avatar size='small' src={profile.image ?? '/assets/user.png'} />
+                            <Item.Image avatar size='small' src={user?.image || '/assets/user.png'} />
                             <Item.Content verticalAlign="middle" >
                                 <Header as='h1' content={profile.displayName} />
                             </Item.Content>
@@ -42,4 +46,4 @@ export default function ProfileHeader({profile} : Props) {
             </Grid>
         </Segment>
     )
-}
+})
