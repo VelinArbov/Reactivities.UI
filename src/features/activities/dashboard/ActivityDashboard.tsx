@@ -12,6 +12,10 @@ export default observer( function ActivityDashboard() {
     useEffect(() => {
       if(activityStore.activityRegistery.size <= 1) activityStore.loadActivities();
     }, [activityStore.loadActivities]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+      }, [])
   
     if (activityStore.loadingInitial) return <LoadingComponents content='Loading activities...' /> 
 

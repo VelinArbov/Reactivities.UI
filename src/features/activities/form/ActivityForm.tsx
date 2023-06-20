@@ -76,7 +76,7 @@ export default observer(function ActivityForm() {
                             positive
                             type='submit'
                             content='Submit' />
-                        <Button as={Link} to={`/activities/${activity.id}`} floated='right' type='button' content='Cancel' />
+                        <Button as={Link} to={activity.id ?`/activities/${activity.id}` : '/activities'} floated='right' type='button' content='Cancel' />
                     </Form>
                 )}
             </Formik>

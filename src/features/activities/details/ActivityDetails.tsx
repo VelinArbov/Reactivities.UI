@@ -16,7 +16,11 @@ export default observer(function ActivityDetails() {
     useEffect(() => {
         if (id) activityStore.loadActivity(id);
         return () => activityStore.clearSelectedActivity();
-    }, [id, activityStore.loadActivity, activityStore.clearSelectedActivity])
+    }, [id, activityStore.loadActivity, activityStore.clearSelectedActivity]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+      }, [])
 
     if (activityStore.loadingInitial || !activityStore.selectedActivity) return <LoadingComponent />
 
