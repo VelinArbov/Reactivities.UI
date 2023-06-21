@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, reaction, runInAction } from "mobx";
 import { Activity, ActivityFormValues } from "../models/activity";
 import agent from "../api/agent";
 import { store } from "./store";
@@ -13,21 +13,65 @@ export default class ActivityStore {
   loadingInitial = false;
   pagination: Pagination | null = null;
   pagingParams = new PagingParams();
+  predicate = new Map().set("all", true);
 
   constructor() {
     makeAutoObservable(this);
+
+    reaction(
+      ()=> this.predicate.keys(),
+      () => {
+        this.pagingParams = new PagingParams();
+        this.activityRegistery.clear();
+        this.loadActivities();
+      }
+    )
   }
 
-
-  setPagingParams = (pagingParams : PagingParams) => {
+  setPagingParams = (pagingParams: PagingParams) => {
     this.pagingParams = pagingParams;
-  }
+  };
 
-  get axiosParams () {
+  setPredicate = (predicate: string, value: string | Date) => {
+    const resetPredicate = () => {
+      this.predicate.forEach((value, key) => {
+        if (key !== "startDate") this.predicate.delete(key);
+      });
+    };
+    switch (predicate) {
+      case "all":
+        resetPredicate();
+        this.predicate.set("all", true);
+        break;
+      case "isGoing":
+        resetPredicate();
+        this.predicate.set("isGoing", true);
+        break;
+      case "isHost":
+        resetPredicate();
+        this.predicate.set("isHost", true);
+        break;
+      case "startDate":
+        this.predicate.delete("startDate");
+        this.predicate.set("startDate", value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  get axiosParams() {
     const params = new URLSearchParams();
-    params.append('pageNumber', this.pagingParams.pageNumber.toString());
-    params.append('pageSize', this.pagingParams.pagesSize.toString());
-    return params
+    params.append("pageNumber", this.pagingParams.pageNumber.toString());
+    params.append("pageSize", this.pagingParams.pagesSize.toString());
+    this.predicate.forEach((value, key) => {
+      if (key === "startDate") {
+        params.append(key, (value as Date).toISOString());
+      } else {
+        params.append(key, value);
+      }
+    });
+    return params;
   }
 
   get activitiesByDate() {
@@ -63,9 +107,9 @@ export default class ActivityStore {
     }
   };
 
-  setPagination = (pagination : Pagination )=> {
+  setPagination = (pagination: Pagination) => {
     this.pagination = pagination;
-  }
+  };
 
   loadActivity = async (id: string) => {
     let activity = this.getActivity(id);
@@ -195,13 +239,16 @@ export default class ActivityStore {
     this.loading = true;
     try {
       await agent.Activities.attend(this.selectedActivity!.id);
-      runInAction(()=> {
-        this.selectedActivity!.isCancelled = !this.selectedActivity?.isCancelled;
-        this.activityRegistery.set(this.selectedActivity!.id, this.selectedActivity!)
-      })
-
+      runInAction(() => {
+        this.selectedActivity!.isCancelled =
+          !this.selectedActivity?.isCancelled;
+        this.activityRegistery.set(
+          this.selectedActivity!.id,
+          this.selectedActivity!
+        );
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
       runInAction(() => {
         this.loading = false;
@@ -209,18 +256,20 @@ export default class ActivityStore {
     }
   };
 
-  clearSelectedActivity=() => {
+  clearSelectedActivity = () => {
     this.selectedActivity = undefined;
-  }
+  };
 
-  updateAttendeeFollowing = (username : string) => {
-    this.activityRegistery.forEach(actviity => {
-      actviity.attendees.forEach(attendee => {
-        if(attendee.userName == username){
-          attendee.following ? attendee.followersCount-- : attendee.followersCount++;
+  updateAttendeeFollowing = (username: string) => {
+    this.activityRegistery.forEach((actviity) => {
+      actviity.attendees.forEach((attendee) => {
+        if (attendee.userName == username) {
+          attendee.following
+            ? attendee.followersCount--
+            : attendee.followersCount++;
           attendee.following = !attendee.following;
         }
-      })
-    })
-  }
+      });
+    });
+  };
 }
