@@ -7,7 +7,7 @@ import { User, UserFormValues } from "../models/user";
 import { Photo, Profile, UserActivity } from "../models/profile";
 import { PaginatedResult } from "../models/pagination";
 
-axios.defaults.baseURL = "http://localhost:5085/";
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Grid } from 'semantic-ui-react';
 import { useStore } from '../../../app/stores/store';
 import { observer } from 'mobx-react-lite';
@@ -17,10 +17,6 @@ export default observer(function ActivityDetails() {
         if (id) activityStore.loadActivity(id);
         return () => activityStore.clearSelectedActivity();
     }, [id, activityStore.loadActivity, activityStore.clearSelectedActivity]);
-
-    useEffect(() => {
-        window.scrollTo(0, 0)
-      }, [])
 
     if (activityStore.loadingInitial || !activityStore.selectedActivity) return <LoadingComponent />
 
